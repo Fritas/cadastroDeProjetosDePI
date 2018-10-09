@@ -17,7 +17,6 @@ class Autor(db.Model):
     :type CPF: string
     """
 
-
     id = db.Column(db.integer, primary_key=True)
     primeiro_nome = db.Column(db.String(15))
     nome_do_meio = db.Column(db.String(30), nullable=True) #nullable=True permiti null
@@ -42,21 +41,28 @@ class Autor(db.Model):
     def _str__(self):
         pass
 
+autoria = db.Table('autoria',
+    db.Column('autor_id', db.Integer, db.ForeignKey('autor.id'), primary_key=True),
+    db.Column('projeto_id', db.Integer, db.ForeignKey('projeto.id'), primary_key=True)
+)
+
+
 class Projeto(db.Model):
     """ """
-
-
-    def __init__(self, titulo, autores, descricao="", id=None):
-        """
-        :type id: int
-        :type titulo: string
-        :type lista_autores: list
-        :type descricao: string
-        :type lista_orientadores: list
-        :type lista_coorientadores: list
-        :type lista_colaboradores: list
-        """
-        pass
+    """
+    :type id: int
+    :type titulo: string
+    :type lista_autores: list
+    :type descricao: string
+    :type lista_orientadores: list
+    :type lista_coorientadores: list
+    :type lista_colaboradores: list
+    """
+    id = db.Column(db.integer, primary_key=True)
+    titulo = db.Column(db.String(40))
+    autores = db.relationship('Autor', secondary=autoria, lazy='subquery',
+        backref=db.backref('Projeto', lazy=True))
+    descricao = db.Column(db.String(3000))
 
     def adicionar_autor(self, autor):
         """
@@ -83,3 +89,12 @@ class Projeto(db.Model):
 
     def _str__(self):
         pass
+
+if __name__ == "__main__":
+    autor = Autor(
+        primeiro_nome = 'Adriano',
+        nome_do_meio = 'Damasceno da Silva',
+        ultimo_nome = 'Júnior',
+        data_de_nascimento = date(year=2000, month=6, day=21),
+        CPF= "000.000.000-00"
+    )
