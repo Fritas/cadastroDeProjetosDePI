@@ -1,100 +1,104 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+import os
+from peewee import *
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/database.db'
-db = SQLAlchemy(app)
+arq = 'pi3.db'
+db = SqliteDatabase(arq)
 
-class Autor(db.Model):    
-    """
-    Esta classe implementa um objeto Autor
-
-    :type id: int
-    :type primeiro_nome: string
-    :type nome_do_meio: string
-    :type ultimo_nome: string
-    :type data_de_nascimento: datetime
-    :type CPF: string
-    """
-
-    id = db.Column(db.integer, primary_key=True)
-    primeiro_nome = db.Column(db.String(15))
-    nome_do_meio = db.Column(db.String(30), nullable=True) #nullable=True permiti null
-    ultimo_nome = db.Column(db.String(15))
-    data_de_nascimento = db.Column(db.String(15))
-    CPF = db.Column(db.String(15), unique=True)
-
-    def validar_cpf(self, cpf):
-        """
-        :type CPF: string
-        """
-        pass
-
-    def atualizar_nome(self, n_primeiro_nome, n_nome_do_meio, n_ultimo_nome):
-        """
-        :type primeiro_nome: string
-        :type nome_do_meio: string
-        :type ultimo_nome: string
-        """
-        pass
-
-    def _str__(self):
-        pass
-
-autoria = db.Table('autoria',
-    db.Column('autor_id', db.Integer, db.ForeignKey('autor.id'), primary_key=True),
-    db.Column('projeto_id', db.Integer, db.ForeignKey('projeto.id'), primary_key=True)
-)
+class BaseModel(Model):
 
 
-class Projeto(db.Model):
-    """ """
-    """
-    :type id: int
-    :type titulo: string
-    :type lista_autores: list
-    :type descricao: string
-    :type lista_orientadores: list
-    :type lista_coorientadores: list
-    :type lista_colaboradores: list
-    """
-    id = db.Column(db.integer, primary_key=True)
-    titulo = db.Column(db.String(40))
-    autores = db.relationship('Autor', secondary=autoria, lazy='subquery',
-        backref=db.backref('Projeto', lazy=True))
-    descricao = db.Column(db.String(3000))
+    class Meta:
+        database = db
+        
+class Aluno(BaseModel):
 
-    def adicionar_autor(self, autor):
-        """
-        :type autor: Autor
-        """
-        pass
 
-    def adicionar_orientador(self, orientador):
-        """
-        :type orientador: Autor
-        """
-        pass
+    nome = CharField()
+    turma = CharField()
 
-    def adicionar_coorientador(self, coorientador):
-        """
-        :type coorientador: Autor
-        """
-        pass
-    def adicionar_colaborador(self, colaborador):
-        """
-        :type colaborador: Autor
-        """
-        pass
+    def __str__(self):
+        return "%s - %s - %s" %(self.id, self.nome, self.turma)
 
-    def _str__(self):
-        pass
+class Area(BaseModel):
+
+
+    nome = CharField()
+    descricao = CharField()
+
+    def __str__(self):
+        return self.nome
+    
+class Docente(BaseModel):
+
+
+    nome = CharField()
+    areas = ManyToManyField(Area)
+
+    def __str__(self):
+        s = self.nome
+        for area in self.areas:
+            s += ", atuante em "+str(area)
+        return s
+
+class TrabalhoPI(BaseModel):
+
+
+    titulo = CharField()
+    descricao = CharField()
+    url = CharField()
+    alunos = ManyToManyField(Aluno)
+    docentes = ManyToManyField(Docente)
+
+
+    def __str__(self):
+        s = self.titulo
+        for aluno in self.alunos:
+            s+= ", membro: "+ aluno.nome
+        for doc in self.docentes:
+            s += ", orientado por: " + str(doc)
+        return s
+
+def inicializar_bd():
+    if os.path.exists(arq):
+        os.remove(arq)
+    db.connect()
+    db.create_tables([
+        Aluno,
+        Area,
+        Docente,
+        Docente.areas.get_through_model(),
+        TrabalhoPI,
+        TrabalhoPI.alunos.get_through_model(),
+        TrabalhoPI.docentes.get_through_model()])
 
 if __name__ == "__main__":
-    autor = Autor(
-        primeiro_nome = 'Adriano',
-        nome_do_meio = 'Damasceno da Silva',
-        ultimo_nome = 'Júnior',
-        data_de_nascimento = date(year=2000, month=6, day=21),
-        CPF= "000.000.000-00"
-    )
+
+    inicializar_bd()
+
+    pedro = Aluno.create(nome = "Pedro de Oliveira", 
+        turma = "301 INFO")
+    maria = Aluno.create(nome = "Maria de Souza", 
+        turma = "301 INFO")
+
+    bd = Area.create(nome = "Banco de dados",
+        descricao = "Modelagem, implementação e "+\
+        "suporte de bancos de dados.")
+    tf = Area.create(nome = "Tolerância a faltas", 
+        descricao = "Provimento de robustez a sistemas, "+\
+        "para que os mesmos operem de maneira ininterrupta.")
+    
+    aldelir = Docente.create(nome = "Aldelir Luiz")
+    aldelir.areas.add(bd)
+    aldelir.areas.add(tf)
+
+    t1 = TrabalhoPI.create(titulo = "Bancos de Dados em "+\
+        "Grafos para Modelagem Tridimensional de Estrelas",
+        descricao = "Uso do Neo4j para armazenar "+\
+        "pontos da estrela Órion",
+        url = "não disponível")
+    t1.alunos.add(pedro)
+    t1.alunos.add(maria)
+    t1.docentes.add(aldelir)
+
+    print(t1)   
+    print(Aluno.select()[0])

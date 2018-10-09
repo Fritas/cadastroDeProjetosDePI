@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block title %}{{dic.titulo}}{% endblock %}
+{% block head %}
+
+{% endblock %}
+{% block section %}
+    <h1>{{dic.titulo}}</h1>
+    <form>
+    </form>
+
+    <p class="important">
+      {% for item in dic.itens %}
+        <p><a href='/{{dic.link}}/?id={{item.id}}'>{{item}}</a></p>
+        <br>
+      {% endfor %}
+    </p>
+{% endblock %}

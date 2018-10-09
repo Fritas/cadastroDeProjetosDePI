@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+    <title>{% block title %} {% endblock %}</title>
+    <meta charset="utf-8">
+    {% block head %}{% endblock %}
+    
+    </head>
+    <body>
+        <!-- Defines a header for a document or a section -->
+        <header></header>
+
+        <!-- Defines a container for navigation links -->
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/projetos">Projetos</a></li>
+                <li><a href="/docentes">Docentes</a></li>
+                <li><a href="/alunos">Alunos</a></li>
+            </ul>
+        </nav>
+
+        <!-- Defines a section in a document -->
+        <section>
+        {% block section %} {% endblock %}
+        </section>
+        
+        <!-- Defines an independent self-contained article -->
+        <article></article>
+        
+        <!-- Defines content aside from the content (like a sidebar) -->
+        <aside></aside>
+
+        <!-- Defines a footer for a document or a section -->
+        <footer></footer>
+
+    </body>
+</html>
