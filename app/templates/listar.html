@@ -4,13 +4,15 @@
 
 {% endblock %}
 {% block section %}
+    <a href="{{ dic.link_cadastrar }}">Cadastrar {{ dic.titulo }}</a>
+
     <h1>{{dic.titulo}}</h1>
     <form>
     </form>
 
-    <p class="important">
+    <p>
       {% for item in dic.itens %}
-        <p><a href='/{{dic.link}}/?id={{item.id}}'>{{item}}</a></p>
+        <p><a href='/{{ dic.link_exibir}}/?id={{ item.id}}'>{{item}}</a></p>
         <br>
       {% endfor %}
     </p>

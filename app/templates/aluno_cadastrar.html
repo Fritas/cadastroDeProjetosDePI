@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block title %}Cadastrar Aluno  {% endblock %}
+{% block head %}
+
+{% endblock %}
+{% block section %}
+
+    <form action="/alunos/cadastrar" method="GET">
+        Nome:<br>
+        <input type="text" name="nome">
+        <br>
+        Turma:<br>
+        <input type="text" name="turma">
+        <br><br>
+        <input type="submit" value="Cadastrar">
+    </form> 
+
+{% endblock %}

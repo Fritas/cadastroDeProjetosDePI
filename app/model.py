@@ -17,7 +17,7 @@ class Aluno(BaseModel):
     turma = CharField()
 
     def __str__(self):
-        return "%s - %s - %s" %(self.id, self.nome, self.turma)
+        return "%s - %s" %(self.nome, self.turma)
 
 class Area(BaseModel):
 

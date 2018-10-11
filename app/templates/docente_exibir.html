@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block title %}Docente - {{dic.docente.nome}}{% endblock %}
+{% block head %}
+
+{% endblock %}
+{% block section %}
+    
+    <p>Nome: {{dic.docente.nome}}</p>
+    <p>Atuante nas seguintes áreas:
+        <ul>
+            {% for area in dic.docente.areas %}
+                <li>{{area}}</li>
+            {% endfor %}
+        </ul>
+    </p>
+      
+{% endblock %}

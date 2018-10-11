@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block title %}Projeto - {{dic.projeto.titulo}}{% endblock %}
+{% block head %}
+
+{% endblock %}
+{% block section %}
+    
+    <p>Título: {{dic.projeto.titulo}}</p>
+    <p>Descrição: {{dic.projeto.descricao}}</p>
+    <p>Url: <a href="{{dic.projeto.url}}" target="blank">{{dic.projeto.url}}</a></p><br>
+    
+    <p>Alunos:</p><br>
+    <p>  
+      {% for aluno in dic.projeto.alunos %}
+         {{aluno}} <br>
+      {% endfor %}
+    </p>
+    <p>Docentes:</p><br>
+    <p>
+      {% for docente in dic.projeto.docentes %}
+        {{docente}} <br>
+      {% endfor %}
+    </p>
+      
+{% endblock %}
