@@ -3,6 +3,7 @@ from model import *
 
 app = Flask(__name__)
 
+
 @app.route('/')
 def index():
     return render_template('layout.html')
@@ -15,7 +16,8 @@ def exibir_projetos():
     dic = {
         'titulo' : 'Projetos',
         'link_exibir' : 'projetos/projeto',
-        'itens' : TrabalhoPI.select()
+        'itens' : TrabalhoPI.select(),
+        'link_cadastrar' : '/projetos/projeto/cadastrar'
     }
     return render_template('listar.html', dic=dic)
 
@@ -37,14 +39,38 @@ def exibir_projeto():
             dic = {
                 'titulo' : projeto.titulo,
                 'projeto' : projeto,
-                
             }
             return render_template("projeto_exibir.html", dic=dic)
 
-@app.route("/projeto/cadastrar")
+@app.route("/projetos/projeto/cadastrar", methods=['GET'])
 def cadastrar_projeto():
-    dic = {}
-    return render_template('projeto_cadastrar.html', dic=dic)
+    try:
+        projeto_titulo = request.args.get('titulo')
+        projeto_descricao = request.args.get('descricao')
+        projeto_url =  request.args.get('url')
+        if projeto_titulo is None or projeto_descricao is None:
+            raise Exception("Valor nao aceito!")
+    except Exception as identifier:
+        print("Error em cadastrar_projeto(): %s" %(identifier))
+        dic = {
+            'alunos' : Aluno.select(),
+            'docentes' : Docente.select()
+        }
+        return render_template('projeto_cadastrar.html', dic=dic)
+    else:
+        #para evitar url como None
+        if projeto_url is None:
+            projeto_url = 'Não disponível'
+        #criando projeto
+        projeto_id = TrabalhoPI.create(titulo=projeto_titulo, descricao=projeto_descricao, url=projeto_url)
+        #pegando dados
+        projeto = TrabalhoPI.select().where(TrabalhoPI.id == projeto_id)[0]
+        dic = {
+                'titulo' : projeto.titulo,
+                'projeto' : projeto,
+        }
+        #renderizando a pagina do novo projeto
+        return render_template('projeto_exibir.html', dic=dic)
 
 # ---------------------------------------------------
 # DOCENTES
